@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar'
 import { ImageBackground, Text, TouchableOpacity, View } from 'react-native'
 import { styled } from 'nativewind'
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
+import * as SecureStore from 'expo-secure-store'
 
 import {
   useFonts,
@@ -14,6 +15,7 @@ import { BaiJamjuree_700Bold } from '@expo-google-fonts/bai-jamjuree'
 import blurBg from './src/assets/bg-blur.png'
 import Stripes from './src/assets/stripes.svg'
 import Logo from './src/assets/logo.svg'
+import { api } from './src/lib/api'
 
 const StyledStripes = styled(Stripes)
 
@@ -31,7 +33,7 @@ export default function App() {
     BaiJamjuree_700Bold,
   })
 
-  const [request, response, signInWithGithub] = useAuthRequest(
+  const [, response, signInWithGithub] = useAuthRequest(
     {
       clientId: '7f88c308efd688f32e34',
       scopes: ['identity'],
@@ -51,7 +53,18 @@ export default function App() {
 
     if (response?.type === 'success') {
       const { code } = response.params
-      console.log('🚀 ~ useEffect ~ code:', code)
+      api
+        .post('/register', {
+          code,
+        })
+        .then((response) => {
+          const { token } = response.data
+
+          SecureStore.setItemAsync('token', token)
+        })
+        .catch((error) => {
+          console.log('erro:', error)
+        })
     }
   }, [response])
 
