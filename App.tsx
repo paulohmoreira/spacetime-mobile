@@ -43,9 +43,15 @@ export default function App() {
   )
 
   useEffect(() => {
+    // console.log(
+    //   makeRedirectUri({
+    //     scheme: 'spacetime',
+    //   }),
+    // )
+
     if (response?.type === 'success') {
       const { code } = response.params
-      console.log(code)
+      console.log('🚀 ~ useEffect ~ code:', code)
     }
   }, [response])
 
